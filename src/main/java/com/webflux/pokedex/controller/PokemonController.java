@@ -1,12 +1,16 @@
 package com.webflux.pokedex.controller;
 
 import com.webflux.pokedex.model.Pokemon;
+import com.webflux.pokedex.model.PokemonEvent;
 import com.webflux.pokedex.repository.PokemonRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 @RequestMapping("/api/pokemons")
 @RestController
@@ -64,5 +68,11 @@ public class PokemonController {
                         .then(Mono.just(ResponseEntity.noContent().build())))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
+
+    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<PokemonEvent> getPokemonEvents(){
+        return Flux.interval(Duration.ofSeconds(5)).map(val -> new PokemonEvent(val, "Ivysaur"));
+    }
+
 
 }
